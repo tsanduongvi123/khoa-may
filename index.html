@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>LOCKED</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%;overflow:hidden;background:#000;color:#ff0040;font-family:Arial,sans-serif}
+    #lock{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:999999999;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#000}
+    h1{font-size:70px;animation:pulse 1.5s infinite;text-shadow:0 0 30px #ff0040}
+    p{font-size:28px;margin:30px;color:#fff}
+    input{padding:20px;font-size:28px;width:90%;max-width:500px;margin:20px;border:3px solid #ff0040;background:#111;color:#fff;text-align:center;border-radius:15px}
+    button{padding:20px 50px;font-size:28px;background:#ff0040;color:#fff;border:none;border-radius:15px;margin-top:20px}
+    #wrong{color:#ff0040;font-size:24px;margin-top:20px;opacity:0}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-15px)}75%{transform:translateX(15px)}}
+    .shake{animation:shake 0.6s}
+  </style>
+</head>
+<body>
+
+<div id="lock">
+  <h1>THIẾT BỊ ĐÃ BỊ KHÓA</h1>
+  <p>Nhập key để mở khóa</p>
+  <input type="text" id="keyInput" placeholder="DGVIKAKAZZZ" autocomplete="off">
+  <button onclick="unlock()">MỞ KHÓA</button>
+  <div id="wrong">SAI KEY RỒI!</div>
+</div>
+
+<script>
+  const CORRECT_KEY = "DGVIKAKAZZZ";
+
+  // VÔ HIỆU HÓA HOÀN TOÀN TRONG WEBVIEW
+  document.oncontextmenu = () => false;
+  document.onselectstart = () => false;
+  document.ondragstart = () => false;
+  document.body.style.userSelect = 'none';
+  document.body.style.touchAction = 'none';
+
+  // Chặn mọi phím (Back, Menu, Home trên Android khi dùng WebView)
+  document.addEventListener('keydown', e => e.preventDefault(), true);
+  document.addEventListener('keyup', e => e.preventDefault(), true);
+
+  // Chặn back button Android trong WebView
+  history.pushState(null, null, location.href);
+  window.onpopstate = () => history.pushState(null, null, location.href);
+
+  // Fullscreen thật
+  document.documentElement.requestFullscreen?.();
+
+  // Chặn DevTools
+  setInterval(() => {
+    const devtools = /./;
+    devtools.toString = () => { document.body.innerHTML = '<h1 style="color:red">ĐÓNG DEVTOOLS NGAY!</h1>'; };
+    console.log(devtools);
+  }, 1000);
+
+  function unlock() {
+    const input = document.getElementById('keyInput').value.trim();
+    const msg = document.getElementById('wrong');
+    
+    if (input === CORRECT_KEY) {
+      document.getElementById('lock').style.display = 'none';
+      alert("ĐÃ MỞ KHÓA!");
+    } else {
+      msg.style.opacity = '1';
+      msg.classList.add('shake');
+      navigator.vibrate?.([300,100,300,100,300]);
+      setTimeout(() => {
+        msg.style.opacity = '0';
+        msg.classList.remove('shake');
+      }, 2000);
+      document.getElementById('keyInput').value = '';
+    }
+  }
+
+  // Tự động focus ô nhập
+  setTimeout(() => document.getElementById('keyInput').focus(), 500);
+</script>
+
+</body>
+</html>
